@@ -7,7 +7,7 @@ AppApiPage adds the /page endpoint to the [AppApi](https://modules.processwire.c
 | | |
 | ------------------: | -------------------------------------------------------------------------- |
 | ProcessWire-Module: | [https://modules.processwire.com/modules/app-api-page/](https://modules.processwire.com/modules/app-api-page/)                                                                    |
-|      Support-Forum: | [https://processwire.com/talk/topic/26272-appapi-module-appapipage/](https://processwire.com/talk/topic/26272-appapi-module-appapipage/)                                                                      |
+|      Support-Forum: | [https://processwire.com/talk/topic/26855-appapi-module-appapipage/](https://processwire.com/talk/topic/26855-appapi-module-appapipage/)                                                                      |
 |         Repository: | [https://github.com/Sebiworld/AppApiPage](https://github.com/Sebiworld/AppApiPage) |
 
 Relies on AppApi:
