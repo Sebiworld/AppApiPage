@@ -10,7 +10,7 @@ class AppApiPage extends WireData implements Module {
 		return [
 			'title' => 'AppApi - Page',
 			'summary' => 'AppApi-Module that adds a page endpoint',
-			'version' => '1.0.0',
+			'version' => '1.0.1',
 			'author' => 'Sebastian Schendel',
 			'icon' => 'terminal',
 			'href' => 'https://modules.processwire.com/modules/app-api-page/',
@@ -51,31 +51,53 @@ class AppApiPage extends WireData implements Module {
 	public static function pageIDRequest($data) {
 		$data = AppApiHelper::checkAndSanitizeRequiredParameters($data, ['id|int']);
 		$page = wire('pages')->get('id=' . $data->id);
-		return self::pageRequest($page);
+		return self::pageRequest($page, '');
 	}
 
 	public static function dashboardRequest() {
 		$page = wire('pages')->get('/');
-		return self::pageRequest($page);
+		return self::pageRequest($page, '');
 	}
 
 	public static function pagePathRequest($data) {
 		$data = AppApiHelper::checkAndSanitizeRequiredParameters($data, ['path|pagePathName']);
-		$page = wire('pages')->get('/' . $data->path);
-		return self::pageRequest($page);
+		$path = '/' . trim($data->path, '/') . '/';
+		$page = wire('pages')->get('path="' . $path . '"');
+
+		if (!$page->id && wire('modules')->isInstalled('LanguageSupport')) {
+			// Check if its a root path
+			$rootPage = wire('pages')->get('/');
+			foreach ($rootPage->urls as $key => $value) {
+				if ($value !== $path) {
+					continue;
+				}
+				return self::pageRequest($rootPage, $key);
+			}
+		}
+
+		$info = wire('pages')->pathFinder()->get($path);
+		if (!empty($info['language']['name'])) {
+			return self::pageRequest($page, $info['language']['name']);
+		}
+
+		return self::pageRequest($page, '');
 	}
 
-	protected static function pageRequest(Page $page) {
+	protected static function pageRequest(Page $page, $languageFromPath) {
 		if (wire('modules')->isInstalled('LanguageSupport')) {
-			$lang = '' . strtolower(wire('input')->get->pageName('lang'));
-			$langAlt = SELF::getLanguageCode($lang);
-
-			if (!empty($lang) && wire('languages')->get($lang) instanceof Page && wire('languages')->get($lang)->id) {
-				wire('user')->language = wire('languages')->get($lang);
-			} elseif (!empty($langAlt) && wire('languages')->get($langAlt) instanceof Page && wire('languages')->get($langAlt)->id) {
-				wire('user')->language = wire('languages')->get($langAlt);
+			if (!empty($languageFromPath) && wire('languages')->get($languageFromPath) instanceof Page && wire('languages')->get($languageFromPath)->id) {
+				wire('user')->language = wire('languages')->get($languageFromPath);
 			} else {
-				wire('user')->language = wire('languages')->getDefault();
+				$lang = '' . strtolower(wire('input')->get->pageName('lang'));
+				$langAlt = SELF::getLanguageCode($lang);
+
+				if (!empty($lang) && wire('languages')->get($lang) instanceof Page && wire('languages')->get($lang)->id) {
+					wire('user')->language = wire('languages')->get($lang);
+				} elseif (!empty($langAlt) && wire('languages')->get($langAlt) instanceof Page && wire('languages')->get($langAlt)->id) {
+					wire('user')->language = wire('languages')->get($langAlt);
+				} else {
+					wire('user')->language = wire('languages')->getDefault();
+				}
 			}
 		}
 

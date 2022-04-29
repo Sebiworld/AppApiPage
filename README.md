@@ -69,6 +69,10 @@ if (wire('modules')->isInstalled('AppApi')) {
 
 ## Changelog
 
+### Changes in 1.0.1 (2022-04-29)
+
+- Added support for Multi-Language URLS
+
 ### Changes in 1.0.0 (2022-03-06)
 
 - Added page endpoint
