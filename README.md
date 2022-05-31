@@ -69,6 +69,10 @@ if (wire('modules')->isInstalled('AppApi')) {
 
 ## Changelog
 
+### Changes in 1.0.2 (2022-06-01)
+
+- Bugfix throw 404 status if not found
+
 ### Changes in 1.0.1 (2022-04-29)
 
 - Added support for Multi-Language URLS

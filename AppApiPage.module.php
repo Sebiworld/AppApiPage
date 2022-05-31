@@ -10,7 +10,7 @@ class AppApiPage extends WireData implements Module {
 		return [
 			'title' => 'AppApi - Page',
 			'summary' => 'AppApi-Module that adds a page endpoint',
-			'version' => '1.0.1',
+			'version' => '1.0.2',
 			'author' => 'Sebastian Schendel',
 			'icon' => 'terminal',
 			'href' => 'https://modules.processwire.com/modules/app-api-page/',
@@ -99,9 +99,17 @@ class AppApiPage extends WireData implements Module {
 					wire('user')->language = wire('languages')->getDefault();
 				}
 			}
+
+			if (!($page instanceof Page) || !$page->id) {
+				throw new NotFoundException();
+			} elseif (!$page->viewable(wire('user')->language)) {
+				throw new ForbiddenException();
+			}
 		}
 
-		if (!$page->viewable()) {
+		if (!($page instanceof Page) || !$page->id) {
+			throw new NotFoundException();
+		} elseif (!$page->viewable()) {
 			throw new ForbiddenException();
 		}
 
